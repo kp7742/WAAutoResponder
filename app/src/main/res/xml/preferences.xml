@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="About">
+
+        <Preference
+            android:key="about"
+            android:icon="@mipmap/ic_launcher_round"
+            android:title="@string/app_name"
+            android:summary="@string/app_summ"
+            android:persistent="false"
+            app:legacySummary="true"/>
+
+        <SwitchPreference
+            android:key="bot_enable"
+            android:title="Bot Enable" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Common Settings">
+        <SwitchPreference
+            android:key="toast_enable"
+            android:title="Toast Log Enable" />
+
+        <SwitchPreference
+            android:key="translator_enable"
+            android:title="Translator Bot Enable" />
+
+        <SwitchPreference
+            android:key="warning_bot_enable"
+            android:title="Warning Bot Enable" />
+
+        <EditTextPreference
+            android:key="common_pinned_msg"
+            android:title="Pinned Message"
+            android:hint="Pinned Message"
+            app:legacySummary="true" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
