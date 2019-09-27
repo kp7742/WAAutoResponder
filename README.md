@@ -8,7 +8,7 @@ WAAutoResponder is WhatsApp Chat Auto Reply Bot App made for Android to provide 
 
 ## Note
 
-Wants WAAutoResponder which works without Root?, You can Get from [Here](https://github.com/kp7742/WAAutoResponder-NoRoot). But It has Less Functionalites.
+Wants WAAutoResponder which works without Root? which has Less Functionality, You can Get from [Here](https://github.com/kp7742/WAAutoResponder-NoRoot)
 
 ## Overview
 
