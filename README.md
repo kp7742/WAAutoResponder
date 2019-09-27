@@ -31,11 +31,14 @@ Wants WAAutoResponder which works without Root?, You can Get from [Here](https:/
 
 ## How it Works
 
-WAAutoResponder uses Notification Apis of Android to Reply through Notifications of Received Messages. So Make Sure Chats Are not Mute.
+You can check wiki for more Information from [Here](https://github.com/kp7742/WAAutoResponder/wiki)
 
 # How to Use
 
-Just Build and Install it on your phone along with WhatsApp and Open it and Give Root Access and Other Permissions.
+- Build and Install it on your phone along with WhatsApp
+- Give Root Access
+- Give Other Permissions
+- Enable Bot Switch
 
 ## Roadmap
 - [x] Reading WhatsApp Database
