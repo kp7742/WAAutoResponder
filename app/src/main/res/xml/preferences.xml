@@ -24,12 +24,20 @@
             android:title="Toast Log Enable" />
 
         <SwitchPreference
+            android:key="calc_enable"
+            android:title="Calculator Command Enable" />
+
+        <SwitchPreference
+            android:key="weather_enable"
+            android:title="Weather Command Enable" />
+
+        <SwitchPreference
             android:key="translator_enable"
-            android:title="Translator Bot Enable" />
+            android:title="Translator Commands Enable" />
 
         <SwitchPreference
             android:key="warning_bot_enable"
-            android:title="Warning Bot Enable" />
+            android:title="Warning Bot Commands Enable" />
 
         <EditTextPreference
             android:key="common_pinned_msg"

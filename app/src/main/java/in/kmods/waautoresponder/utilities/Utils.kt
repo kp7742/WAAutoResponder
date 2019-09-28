@@ -4,11 +4,16 @@ import android.annotation.SuppressLint
 import android.provider.ContactsContract
 import android.content.ContentValues
 import android.content.Context
+import com.appizona.yehiahd.fastsave.FastSave
 
 class Utils {
     companion object {
         fun jidToNum(jid: String): String {
             return "+" + jid.replace("@s.whatsapp.net", "")
+        }
+
+        fun getBoolPref(key: String): Boolean {
+            return FastSave.getInstance().getBoolean(key, false)
         }
 
         @SuppressLint("Recycle")

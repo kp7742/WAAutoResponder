@@ -3,6 +3,7 @@ package `in`.kmods.waautoresponder
 import `in`.kmods.waautoresponder.activities.PrefKey
 import `in`.kmods.waautoresponder.models.Chat
 import `in`.kmods.waautoresponder.utilities.Utils
+import `in`.kmods.waautoresponder.utilities.evalex.Expression
 import android.app.Notification
 import android.content.ContentValues
 import android.content.Context
@@ -30,7 +31,7 @@ class Replies(ctx: Context) {
         notification = noti
         chat = chatdata
 
-        if(FastSave.getInstance().getBoolean(PrefKey.TOAST_ENABLE, false)) {
+        if(Utils.getBoolPref(PrefKey.TOAST_ENABLE)) {
             val toast =
                 (if (chat.group) chat.group_name + " | " + chat.sender else chat.sender) + " | " +
                         if (chat.media) {
@@ -51,21 +52,29 @@ class Replies(ctx: Context) {
             Toast.makeText(context, toast, Toast.LENGTH_LONG).show()
         }
 
-        if(chat.sender != null && chat.message != null) {
-            val sender = chat.sender
-            val message = chat.message
+        val sender = chat.sender!!
+        val message = chat.message!!
 
-            CommonReply(message)
-        }
+        CommonReply(message)
     }
 
-    fun CommonReply(text: String?){
+    fun CommonReply(text: String){
         when(text) {
             "@helpkp" -> {
                 sendMsg("*KP's Bot Commands* :-\n\n" +
                         "@emailkp - to get my official EMail Address.\n\n" +
                         "@webkp - to get my offical website link.\n\n" +
-                        "@pinkp - to get my pinned message.")
+                        "@pinkp - to get my pinned message." +
+                        "@calc {Expression} - to do calculations like +,-,*,/,% ,\n\n " +
+                        "sin(),cos(),tan(),cot(),sec(),csc()[cosec] ,\n\n " +
+                        "deg()[Radian to Degree],rad()[Degree to Radian],fact()[Factorial] ,\n\n " +
+                        "sqrt()[SquareRoot], log()[log base e], log10()[log base 10] ,\n\n " +
+                        "MIN(e1,e2, ...)[for mininmum of given values], MAX(e1,e2, ...)[for maximum of given values] ,\n\n " +
+                        "Eg. @calckp 3+2\n\n" +
+                        "@mystatus - to get own status.(Wait for System to Fetch, It may Fail)\n\n" +
+                        "@mydata - to get data of your current info.(Wait for System to Fetch, It may Fail)\n\n" +
+                        "@admins - to get list of admins of group(Only for Group).\n\n" +
+                        "@desc - to get Description of Group(Only for Group).")
             }
             "@emailkp" -> {
                 sendMsg("*KP's Official EMail* :- \n\npatel.kuldip91@gmail.com")
@@ -75,6 +84,57 @@ class Replies(ctx: Context) {
             }
             "@pinkp" -> {
                 sendMsg(FastSave.getInstance().getString(PrefKey.COMMON_PINNED_MSG, ""))
+            }
+            "@mystatus" -> {
+                if(chat.status != null && chat.status!!.isNotEmpty()){
+                    sendMsg("*KP's Bot* :-\n\nYour Status is '" + chat.status + "'")
+                } else {
+                    sendMsg("*KP's Bot* :-\n\nSorry, I did't get Your Status")
+                }
+            }
+            "@mydata" -> {
+                if(chat.jid != null && chat.jid!!.isNotEmpty()){
+                    sendMsg("*KP's Bot* :-\n\nYour Name is ${chat.sender}" +
+                            (if (chat.status!!.isNotEmpty()) "\n\nYour Status is '${chat.status}'" else "\n\nSorry, I did't get Your Status") +
+                            "\n\nYour Number is ${chat.number}" +
+                            (if (chat.group) "\n\nThis Group Name is ${chat.group_name}" else ""))
+                } else {
+                    sendMsg("*KP's Bot* :-\n\nSorry, I don't get Your Data")
+                }
+            }
+            "@desc" -> {
+                if(chat.group) {
+                    if (chat.group_desc != null && chat.group_desc!!.isNotEmpty()) {
+                        sendMsg("${chat.group_desc}\n\nSet By ${Utils.jidToNum(chat.group_desc_setter!!)}")
+                    } else {
+                        sendMsg("*This Group Has No Description*")
+                    }
+                }
+            }
+            "@admins" -> {
+                if(chat.group) {
+                    val adminList = getGroupAdmins(chat.gid!!)
+                    var msg = "*Fail to get Admin Data*"
+                    if(adminList.isNotEmpty()){
+                        val stringBuilder = StringBuilder("*${chat.group_name} Group Admins* :-\n\n")
+                        for(i in 0 until adminList.size) {
+                            val jid = adminList.get(i)
+                            val name = getContactDetails(jid)[0]
+                            stringBuilder.append((i+1)).append(". ").append(Utils.jidToNum(jid)).append(" - ").append(name).append("\n")
+                        }
+                        msg = stringBuilder.toString()
+                    }
+                    sendMsg(msg)
+                }
+            }
+        }
+        if(Utils.getBoolPref(PrefKey.CALC_ENABLE) && text.startsWith("@calc")){
+            val problm = text.replace("@calc ","")
+            try {
+                val result = Expression(problm).eval().toString()
+                sendMsg("Answer of $problm is $result")
+            } catch (e: Exception){
+                sendMsg("$problm is Invalid Expression")
             }
         }
     }

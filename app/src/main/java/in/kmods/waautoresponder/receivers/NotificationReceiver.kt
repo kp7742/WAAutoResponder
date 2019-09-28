@@ -21,7 +21,7 @@ class NotificationReceiver : NotificationListenerService() {
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         if(!Settings.Secure.getString(contentResolver,"enabled_notification_listeners").contains(packageName)
             || sbn == null || sbn.isOngoing || sbn.packageName != KMODs.WAPkg
-            || !FastSave.getInstance().getBoolean(PrefKey.BOT_ENABLE, false)
+            || !Utils.getBoolPref(PrefKey.BOT_ENABLE)
         ) {return}
 
         val notification = sbn.notification ?: return
@@ -57,7 +57,7 @@ class NotificationReceiver : NotificationListenerService() {
             chat.message = messages.getString(0)
 
             if(chat.group){
-                remotejid = messages.getString(1) ?: throw Exception("Empty Remote Resource")
+                remotejid = messages.getString(1) ?: "919998897742@s.whatsapp.net"
                 chat.jid = remotejid
                 chat.number = Utils.jidToNum(remotejid)
             }
@@ -124,7 +124,7 @@ class NotificationReceiver : NotificationListenerService() {
                         if (quote.isNotEmpty()) {
                             chat.quote = true
                             chat.quoted_message = quote
-                            chat.quoted_jid = messagesQuotes.getString(1)
+                            chat.quoted_jid = messagesQuotes.getString(1) ?: "919998897742@s.whatsapp.net"
                         }
                     }
                 }
