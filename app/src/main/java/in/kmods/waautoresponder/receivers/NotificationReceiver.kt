@@ -38,7 +38,7 @@ class NotificationReceiver : NotificationListenerService() {
             val chatList = msgstore?.Query(query) ?: throw Exception("Null Chatlist")
             if(chatList.isEmpty){throw Exception("Empty Chatlist")}
 
-            val remotejid = chatList.getString(0) ?: throw Exception("Empty RemoteJid")
+            var remotejid = chatList.getString(0) ?: throw Exception("Empty RemoteJid")
             val msgId = chatList.getString(1) ?: throw Exception("Empty MsgId")
 
             if(remotejid.contains("@g.us")){
@@ -51,16 +51,15 @@ class NotificationReceiver : NotificationListenerService() {
 
             //Check for Quoted and Mentioned Message Data
             query = "select data, remote_resource, media_size, media_caption, media_mime_type, mentioned_jids, quoted_row_id from messages where _id = '$msgId'"
-            val messages = msgstore?.Query(query) ?: throw Exception("Null Message Data")
-            if(messages.isEmpty){throw Exception("Empty Message Data")}
+            val messages = msgstore?.Query(query) ?: throw Exception("Null Message Data - $msgId")
+            if(messages.isEmpty){throw Exception("Empty Message Data - $msgId")}
 
             chat.message = messages.getString(0)
 
-            messages.getString(1)?.let {
-                if(it.isNotEmpty()) {
-                    chat.jid = it
-                    chat.number = Utils.jidToNum(it)
-                }
+            if(chat.group){
+                remotejid = messages.getString(1) ?: throw Exception("Empty Remote Resource")
+                chat.jid = remotejid
+                chat.number = Utils.jidToNum(remotejid)
             }
 
             messages.getString(2)?.let {
@@ -73,8 +72,8 @@ class NotificationReceiver : NotificationListenerService() {
 
             //Lookup in Whatsapp Contacts for Sender Data
             query = "select display_name, wa_name, status from wa_contacts where jid = '${chat.jid}'"
-            val waContacts = wacontact?.Query(query) ?: throw Exception("Null WA Contacts")
-            if(waContacts.isEmpty){throw Exception("Empty WA Contacts")}
+            val waContacts = wacontact?.Query(query) ?: throw Exception("Null WA Contacts - ${chat.jid}")
+            if(waContacts.isEmpty){throw Exception("Empty WA Contacts - ${chat.jid}")}
 
             val displayName = waContacts.getString(0)
             val waName = waContacts.getString(1)
@@ -92,14 +91,14 @@ class NotificationReceiver : NotificationListenerService() {
             if(chat.group) {
                 //Lookup in Whatsapp Contacts for Sender Data
                 query = "select display_name from wa_contacts where jid = '${chat.gid}'"
-                val waGroups = wacontact?.Query(query) ?: throw Exception("Null WA Groups")
-                if(waGroups.isEmpty){throw Exception("Empty WA Groups")}
+                val waGroups = wacontact?.Query(query) ?: throw Exception("Null WA Groups - ${chat.gid}")
+                if(waGroups.isEmpty){throw Exception("Empty WA Groups - ${chat.gid}")}
 
                 chat.group_name = waGroups.getString(0)
 
                 //Lookup for Whatsapp Group Description
-                query = "select description, description_setter_jid from wa_group_descriptions where jid = '" + chat.jid + "'"
-                val waGroupDesc = wacontact?.Query(query) ?: throw Exception("Null WA Group Desc")
+                query = "select description, description_setter_jid from wa_group_descriptions where jid = '${chat.gid}'"
+                val waGroupDesc = wacontact?.Query(query) ?: throw Exception("Null WA Group Desc - ${chat.gid}")
                 if (!waGroupDesc.isEmpty) {
                     chat.group_desc = waGroupDesc.getString(0)
                     chat.group_desc_setter = waGroupDesc.getString(1)
@@ -116,10 +115,10 @@ class NotificationReceiver : NotificationListenerService() {
 
             //Process Quoted Message Data
             messages.getString(6)?.let {
-                if(it.isNotEmpty() && it.toInt() > 0){
+                if(it.toInt() > 0){
                     query = "select data, remote_resource from messages_quotes where _id = '$it'"
-                    val messagesQuotes = msgstore?.Query(query) ?: throw Exception("Null Message Quotes")
-                    if(messagesQuotes.isEmpty){throw Exception("Empty Message Quotes")}
+                    val messagesQuotes = msgstore?.Query(query) ?: throw Exception("Null Message Quotes - $it")
+                    if(messagesQuotes.isEmpty){throw Exception("Empty Message Quotes - $it")}
 
                     messagesQuotes.getString(0)?.let { quote ->
                         if (quote.isNotEmpty()) {

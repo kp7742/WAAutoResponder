@@ -16,7 +16,7 @@ Wants WAAutoResponder which works without Root? which has Less Functionality, Yo
 - Customisable
 - Easy to Use
 - Toast About Received Message
-- Reply Through Notification Not Added Yet
+- Reply Through Notification
 
 ## Technlogy Communication
 > Email: patel.kuldip91@gmail.com
@@ -51,7 +51,7 @@ You can check wiki for more Information from [Here](https://github.com/kp7742/WA
 - [x] Media Type and Captions
 - [x] Deleted Message
 - [x] Toast To Check Message Details
-- [ ] Reply Through Notification
+- [X] Reply Through Notification
 - More Coming Soon!!
 
 ## Known issues
