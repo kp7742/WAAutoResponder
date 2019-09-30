@@ -64,15 +64,16 @@ class Replies(ctx: Context) {
                 sendMsg("*KP's Bot Commands* :-\n\n" +
                         "@emailkp - to get my official EMail Address.\n\n" +
                         "@webkp - to get my offical website link.\n\n" +
-                        "@pinkp - to get my pinned message." +
+                        "@pinkp - to get my pinned message.\n\n" +
                         "@calc {Expression} - to do calculations like +,-,*,/,% ,\n\n " +
                         "sin(),cos(),tan(),cot(),sec(),csc()[cosec] ,\n\n " +
                         "deg()[Radian to Degree],rad()[Degree to Radian],fact()[Factorial] ,\n\n " +
                         "sqrt()[SquareRoot], log()[log base e], log10()[log base 10] ,\n\n " +
                         "MIN(e1,e2, ...)[for mininmum of given values], MAX(e1,e2, ...)[for maximum of given values] ,\n\n " +
-                        "Eg. @calckp 3+2\n\n" +
+                        "Eg. @calc 3+2\n\n" +
                         "@mystatus - to get own status.(Wait for System to Fetch, It may Fail)\n\n" +
-                        "@mydata - to get data of your current info.(Wait for System to Fetch, It may Fail)\n\n" +
+                        "@mydata - to get basic data of your current info.(Wait for System to Fetch, It may Fail)\n\n" +
+                        "@data - to get basic data of any mentioned or quoted person.(Wait for System to Fetch, It may Fail)\n\n" +
                         "@admins - to get list of admins of group(Only for Group).\n\n" +
                         "@desc - to get Description of Group(Only for Group).")
             }
@@ -135,6 +136,21 @@ class Replies(ctx: Context) {
                 sendMsg("Answer of $problm is $result")
             } catch (e: Exception){
                 sendMsg("$problm is Invalid Expression")
+            }
+        }
+        if(text.startsWith("@data")){
+            val jid = if(chat.quote && chat.quoted_jid != null) chat.quoted_jid
+            else if(chat.mentioned) chat.mentioned_jids!![0] else null
+
+            if(jid != null && jid.isNotEmpty()){
+                val cdata = getContactDetails(jid)
+                sendMsg("*KP's Bot* :-\n\nHello ${chat.sender}, Your Requested Data:-\n\n"  +
+                        "Name = ${cdata[0]}" +
+                        (if (cdata[1].isNotEmpty()) "\n\nStatus = '${cdata[1]}'" else "\n\nSorry, I did't get Your Status") +
+                        "\n\nNumber = ${Utils.jidToNum(jid)}" +
+                        (if (chat.group) "\n\nThis Group Name = ${chat.group_name}" else ""))
+            } else {
+                sendMsg("*KP's Bot* :-\n\nSorry, I don't get Data")
             }
         }
     }
